@@ -13,13 +13,13 @@ sequelize.sync({ force: false })  // Setting force to 'true' will drop the table
 
 // Defining the user model
 const User = sequelize.define(
-  'User',
+  'user',
   {
-    first_name: {
+    firstName: {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    last_name: {
+    lastName: {
       type: DataTypes.STRING,
     },
     email: {
