@@ -10,4 +10,4 @@ const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, proces
     logging: false,
 })
 
-export default sequelize
+export default sequelize;

@@ -1,4 +1,4 @@
-# Health Check API - test
+# Health Check API
 
 ## Description
 
