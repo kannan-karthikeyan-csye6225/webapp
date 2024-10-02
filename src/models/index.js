@@ -15,20 +15,28 @@ sequelize.sync({ force: false })  // Setting force to 'true' will drop the table
 const User = sequelize.define(
   'user',
   {
-    firstName: {
-      type: DataTypes.STRING,
-      allowNull: false,
+    id: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      primaryKey: true
     },
-    lastName: {
+    first_name: {
+      type: DataTypes.STRING,
+    },
+    last_name: {
       type: DataTypes.STRING,
     },
     email: {
-        type: DataTypes.STRING,
+      type: DataTypes.STRING,
     },
     password: {
-        type: DataTypes.STRING
+      type: DataTypes.STRING
     }
   },
+  {
+    createdAt: 'account_created',
+    updatedAt: 'account_updated'
+  }
 );
 
 export default User;

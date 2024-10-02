@@ -1,7 +1,7 @@
 import User from '../models/index.js';
 import logger from '../config/logger.js';
 
-const allowedKeys = ['firstName', 'lastName', 'email', 'password'];
+const allowedKeys = ['first_name', 'last_name', 'email', 'password'];
 
 export const createUser = async (req, res) => {
     try {
@@ -16,8 +16,8 @@ export const createUser = async (req, res) => {
         }
 
         const user = await User.create({
-            firstName: requestBody.firstName,
-            lastName: requestBody.lastName,
+            first_name: requestBody.first_name,
+            last_name: requestBody.last_name,
             email: requestBody.email,
             password: requestBody.password,
         });
