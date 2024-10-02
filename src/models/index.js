@@ -4,7 +4,7 @@ import sequelize from '../config/database.js';
 import logger from '../config/logger.js';
 
 // Sync function creates a Table if a table doesn't exist previously. Does nothing if the table exists already
-sequelize.sync({ force: true })  // Setting force to 'true' will drop the table and create a fresh one.
+sequelize.sync({ force: false })  // Setting force to 'true' will drop the table and create a fresh one.
   .then(() => {
     logger.info('Postgres Database Created (Synced)');
   })
