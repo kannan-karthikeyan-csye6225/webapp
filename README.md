@@ -6,9 +6,15 @@ This is a Node.js application that implements a health check endpoint (`/healthz
 
 The application includes:
 - An endpoint for checking the health of the server and database (`/healthz`).
+- An endpoint to create a new user (`/v1/user`).
+- An endpoint to update an existing user with basic authentication (`/v1/user`).
+- An endpoint to retrieve relevant user information with basic authentication (`/v1/user`).
 - Request validation for `GET` requests with body data, query parameters, or form data that returns a `400 Bad Request`.
 - A robust logging mechanism using **Winston** for monitoring incoming requests and system events.
 - MVC (Model-View-Controller) design pattern to keep the code well-organized and modular.
+- Error handling for improved robustness and user feedback.
+- Basic authentication for securing certain endpoints.
+- Bcrypt algorithm to store passwords securely
 
 ## Technologies
 
@@ -27,6 +33,8 @@ The application includes:
   - Form-data
 - **Logging**: All requests and system events are logged using **Winston**.
 - **Environment configuration**: App configuration using `.env` file.
+- **Basic Authentication**: Certain endpoints require basic authentication for access, ensuring only authorized users can perform actions.
+- **User Data Endpoints (`POST - /v1/user`) (`GET - /v1/user`) (`PUT - /v1/user`)**: API endpoints that allow users to create, update and retrieve their data. PUT and GET are authenticated requests.
 
 ## Project Setup
 
@@ -102,6 +110,76 @@ GET /healthz
   ```bash
   Status: 503 Service Unavailable
   ```
+
+```bash
+POST /v1/user
+```
+
+### Example Response
+
+- **201 Created**:
+  ```bash
+  Status: 201 Created
+  ```
+  
+- **400 Bad Request**:
+  ```bash
+  Status: 400 Bad Request
+  ```
+
+- **503 Service Unavailable**:
+  ```bash
+  Status: 503 Service Unavailable
+  ```
+
+```bash
+Authenticated GET /v1/user
+```
+
+### Example Response
+
+- **201 Created**:
+  ```bash
+  Status: 200 OK
+  ```
+  
+- **400 Bad Request**:
+  ```bash
+  Status: 400 Bad Request
+  ```
+
+- **401 Unauthorized Request**:
+  ```bash
+  Status: 401 Unauthorized
+  ```
+
+- **503 Service Unavailable**:
+  ```bash
+  Status: 503 Service Unavailable
+  ```
+
+
+```bash
+Authenticated PUT /v1/user
+```
+
+### Example Response
+
+- **204 No Content**:
+  ```bash
+  Status: 204 No Content
+  ```
+  
+- **400 Bad Request**:
+  ```bash
+  Status: 400 Bad Request
+  ```
+
+- **503 Service Unavailable**:
+  ```bash
+  Status: 503 Service Unavailable
+  ```
+
 
 ## Logs
 
