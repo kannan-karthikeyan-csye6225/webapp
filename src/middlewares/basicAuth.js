@@ -1,28 +1,30 @@
 import basicAuth from 'express-basic-auth';
 import bcrypt from 'bcrypt';
 import User from '../models/index.js';
+import logger from '../config/logger.js';
 
 const basicAuthMiddleware = basicAuth({
-    authorizeAsync: true,  // Enable async support for bcrypt comparison
+    authorizeAsync: true,
     authorizer: async (username, password, cb) => {
         try {
-            // Find the user by email (username is email in this case)
             const user = await User.findOne({ where: { email: username } });
-            
+
             if (!user) {
-                return cb(null, false);  // User not found
+                logger.info("User cannot be found - Basic Auth is unable to find the email provided")
+                return cb(null, false); 
             }
-
-            // Compare the provided password with the hashed password in the database
             const isPasswordValid = await bcrypt.compare(password, user.password);
+            logger.info("Password matches!")
 
-            return cb(null, isPasswordValid);  // Return true if valid, false otherwise
+            return cb(null, isPasswordValid); 
+
         } catch (error) {
-            return cb(null, false);  // Handle any errors during the process
+            logger.info("Auth error! - Check basicAuth.js file")
+            return cb(null, false);
         }
     },
-    // unauthorizedResponse: { message: 'Unauthorized' },  // Response for unauthorized access
-    challenge: true  // Will challenge for credentials if none are provided
+    // unauthorizedResponse: { message: 'Unauthorized' }
+    challenge: true 
 });
 
 export default basicAuthMiddleware;
