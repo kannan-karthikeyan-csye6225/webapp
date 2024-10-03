@@ -7,23 +7,20 @@ dotenv.config()
 
 const createDatabaseIfNotExists = async () => {
   try {
-    // Connect to the default 'postgres' database
     const client = new Client({
       host: process.env.DB_HOST,
       port: process.env.DB_PORT,
       user: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
-      database: 'postgres',  // Connect to the default 'postgres' database
+      database: 'postgres',
     });
 
     await client.connect();
 
-    // Check if the target database exists
     const dbName = process.env.DB_NAME;
     const res = await client.query(`SELECT 1 FROM pg_database WHERE datname='${dbName}'`);
 
     if (res.rowCount === 0) {
-      // Database doesn't exist, create it
       await client.query(`CREATE DATABASE "${dbName}"`);
       console.log(`Database "${dbName}" created successfully!`);
     } else {
@@ -40,7 +37,6 @@ const createDatabaseIfNotExists = async () => {
 const initializeSequelize = async () => {
   await createDatabaseIfNotExists();
 
-  // Connect to the newly created or existing database
   const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASSWORD, {
     host: process.env.DB_HOST,
     port: process.env.DB_PORT,

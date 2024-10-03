@@ -9,7 +9,7 @@ const router = express.Router();
 
 router
     .route('/')
-    .post( checkDuplicateEmail, createUser)
+    .post(checkDuplicateEmail, createUser)
     .get(checkPayload, basicAuthMiddleware, getUser)
     .put(basicAuthMiddleware, checkPayload, updateUser)
     .all(methodNotAllowed)
