@@ -23,12 +23,21 @@ const User = sequelize.define(
     },
     first_name: {
       type: DataTypes.STRING,
+      validate: {
+        isAlpha: true
+      }
     },
     last_name: {
       type: DataTypes.STRING,
+      validate: {
+        isAlpha: true
+      }
     },
     email: {
       type: DataTypes.STRING,
+      validate: {
+        isEmail: true
+      }
     },
     password: {
       type: DataTypes.STRING
