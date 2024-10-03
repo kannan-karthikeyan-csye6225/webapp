@@ -11,7 +11,7 @@ router
     .route('/')
     .post( checkDuplicateEmail, createUser)
     .get(checkPayload, basicAuthMiddleware, getUser)
-    .put(checkPayload, basicAuthMiddleware, updateUser)
+    .put(basicAuthMiddleware, checkPayload, updateUser)
     .all(methodNotAllowed)
 
 export default router;

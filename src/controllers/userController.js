@@ -1,30 +1,34 @@
 import User from '../models/index.js';
 import logger from '../config/logger.js';
+import { request } from 'express';
 
-const allowedKeys = ['first_name', 'last_name', 'email', 'password'];
+const allowedKeysForCreation = ['first_name', 'last_name', 'email', 'password'];
+const optionalKeys = ['account_created', 'account_updated'];
+const allowedKeysForUpdation = ['first_name', 'last_name', 'password'];
 
 export const createUser = async (req, res) => {
     try {
         const requestBody = req.body;
         const requestKeys = Object.keys(requestBody);
-        const missingKeys = allowedKeys.filter(key => !requestKeys.includes(key));
-        const hasInvalidKeys = requestKeys.some(key => !allowedKeys.includes(key)) || missingKeys.length > 0;
 
-        if (hasInvalidKeys) {
+        const missingKeys = allowedKeysForCreation.filter(key => !requestKeys.includes(key));
+
+        const invalidKeys = requestKeys.filter(key => ![...allowedKeysForCreation, ...optionalKeys].includes(key));
+
+        if (missingKeys.length > 0 || invalidKeys.length > 0) {
             logger.info('Payload contains invalid or missing keys');
             return res.status(400).send();
         }
 
-        const user = await User.create({
-            first_name: requestBody.first_name,
-            last_name: requestBody.last_name,
-            email: requestBody.email,
-            password: requestBody.password,
-        });
+        const { account_created, account_updated, ...userData } = requestBody;
+
+        const user = await User.create(userData);
+
+        const { password, ...userWithoutPassword } = user.get({ plain: true }); // creating this variable just to send response to the user
 
         logger.info(`User created successfully with ID: ${user.id}`);
         res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
-        res.status(201).json(user);
+        res.status(201).json(userWithoutPassword);
     } catch (error) {
         logger.error(`Error creating user: ${error.message}`);
         res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
@@ -71,8 +75,8 @@ export const updateUser = async (req, res) => {
         const requestBody = req.body;
         const requestKeys = Object.keys(requestBody);
 
-        const missingKeys = allowedKeys.filter(key => !requestKeys.includes(key));
-        const hasInvalidKeys = requestKeys.some(key => !allowedKeys.includes(key)) || missingKeys.length > 0;
+        const missingKeys = allowedKeysForUpdation.filter(key => !requestKeys.includes(key));
+        const hasInvalidKeys = requestKeys.some(key => !allowedKeysForUpdation.includes(key)) || missingKeys.length > 0;
 
         if (hasInvalidKeys) {
             logger.info('Payload contains invalid or missing keys for PUT request');
@@ -82,7 +86,8 @@ export const updateUser = async (req, res) => {
         const user = await User.findOne({ where: { email: req.auth.user } });
 
         if (!user) {
-            return res.status(404).json({ message: 'User not found' });
+            logger.info("User not found - check userController - updateUser function")
+            return res.status(404).send();
         }
 
         user.first_name = requestBody.first_name;
@@ -95,6 +100,6 @@ export const updateUser = async (req, res) => {
         res.status(204).send();
     } catch (error) {
         logger.error(`Error updating user: ${error.message}`);
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).send();
     }
 };
