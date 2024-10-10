@@ -1,4 +1,4 @@
-# Health Check API
+# Node.js - Postgres - Sequelize
 
 ## Description
 
@@ -189,5 +189,3 @@ Authenticated PUT /v1/user
   - Errors and exceptions during the health check.
   - Denied requests (with payloads or restricted methods).
   
-# PR TEST
-Final PR TESST coming up
