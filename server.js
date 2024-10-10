@@ -1,8 +1,8 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import logger from './config/logger.js';
-import healthRoute from './routes/healthRoute.js';
-import userRoute from './routes/userRoute.js'; 
+import logger from './src/config/logger.js';
+import healthRoute from './src/routes/healthRoute.js';
+import userRoute from './src/routes/userRoute.js'; 
 
 dotenv.config();
 const app = express();
