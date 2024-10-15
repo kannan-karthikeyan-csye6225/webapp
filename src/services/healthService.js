@@ -1,5 +1,6 @@
-import sequelize from '../config/database.js';
+import { sequelize } from '../config/database.js';
 import logger from '../config/logger.js';
+import { isDatabaseConnected } from '../config/database.js';
 
 const checkDatabaseHealth = async() => {
     try {
