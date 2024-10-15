@@ -11,5 +11,4 @@ const logger = createLogger({
         new transports.Console({ format: format.simple() })
     ]
 });
-
 export default logger;
