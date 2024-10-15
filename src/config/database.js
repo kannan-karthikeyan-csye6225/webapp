@@ -7,35 +7,35 @@ dotenv.config();
 
 let isDatabaseConnected = true;  // Flag to track DB connection status
 
-// const createDatabaseIfNotExists = async () => {
-//   try {
-//     const client = new Client({
-//       host: process.env.DB_HOST,
-//       port: process.env.DB_PORT,
-//       user: process.env.DB_USER,
-//       password: process.env.DB_PASSWORD,
-//       database: 'postgres',
-//     });
+const createDatabaseIfNotExists = async () => {
+  try {
+    const client = new Client({
+      host: process.env.DB_HOST,
+      port: process.env.DB_PORT,
+      user: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
+      database: 'postgres',
+    });
 
-//     await client.connect();
+    await client.connect();
 
-//     const dbName = process.env.DB_NAME;
-//     const res = await client.query(`SELECT 1 FROM pg_database WHERE datname='${dbName}'`);
+    const dbName = process.env.DB_NAME;
+    const res = await client.query(`SELECT 1 FROM pg_database WHERE datname='${dbName}'`);
 
-//     if (res.rowCount === 0) {
-//       await client.query(`CREATE DATABASE "${dbName}"`);
-//       console.log(`Database "${dbName}" created successfully!`);
-//     } else {
-//       console.log(`Database "${dbName}" already exists.`);
-//     }
+    if (res.rowCount === 0) {
+      await client.query(`CREATE DATABASE "${dbName}"`);
+      console.log(`Database "${dbName}" created successfully!`);
+    } else {
+      console.log(`Database "${dbName}" already exists.`);
+    }
 
-//     await client.end();
-//   } catch (error) {
-//     console.error('Error creating database'); // removed the error logging for clean console outputs
-//     isDatabaseConnected = false;  // Set flag to false if DB creation fails
-//     // throw error;
-//   }
-// };
+    await client.end();
+  } catch (error) {
+    console.error('Error creating database'); // removed the error logging for clean console outputs
+    isDatabaseConnected = false;  // Set flag to false if DB creation fails
+    // throw error;
+  }
+};
 
 const initializeSequelize = async () => {
   try {
