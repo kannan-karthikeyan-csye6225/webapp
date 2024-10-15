@@ -2,7 +2,7 @@ import request from 'supertest';
 import express from 'express';
 import dotenv from 'dotenv';
 import healthRoute from '../../src/routes/healthRoute.js';
-import sequelize from '../../src/config/database.js';
+import { sequelize } from '../../src/config/database.js';
 
 dotenv.config();
 
