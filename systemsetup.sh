@@ -27,8 +27,8 @@ sudo groupadd csye6225
 sudo useradd -g csye6225 -m -s /usr/sbin/nologin csye6225
 
 #Make a directory  /opt/apps and have permissions so that the ubuntu user is able to provision file to that directory
-sudo mkdir -p /opt/apps/webapp
-sudo chown ubuntu:ubuntu /opt/apps/webapp
+# sudo mkdir -p /opt/apps/webapp
+# sudo chown ubuntu:ubuntu /opt/apps/webapp
 
 
 #Every command is run
