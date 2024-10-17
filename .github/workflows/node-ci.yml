@@ -52,7 +52,12 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: webapp-code
-        path: . 
+        path: |
+          src/
+          app.sh
+          systemsetup.sh
+          myapp.service 
+          server.js
 
     - name: Verify Artifact
       run: |
