@@ -9,7 +9,7 @@ packer {
 
 variable "webapp_code_dir" {
   type    = string
-  default = "./"  # Points to the root directory of the repo
+  default = "./"
 }
 
 variable "app_name" {
@@ -17,26 +17,31 @@ variable "app_name" {
   default = "webapp"
 }
 
+variable "region" {
+  type    = string
+  default = "us-west-2"
+}
+
 variable "DB_USER" {
-  type = string
-  default = "default"  # Or you can omit default and pass the value in the CLI
+  type    = string
+  default = "default"
 }
 
 variable "DB_PASSWORD" {
-  type = string
+  type    = string
   default = "default"
 }
 
 variable "DB_NAME" {
-  type = string
+  type    = string
   default = "default"
 }
 
 source "amazon-ebs" "ubuntu" {
   // profile       = "dev"
-  ami_name        = "csye6225-${var.app_name}-${formatdate("YYYY_MM_DD_hh_mm_ss", timestamp())}" 
+  ami_name      = "csye6225-${var.app_name}-${formatdate("YYYY_MM_DD_hh_mm_ss", timestamp())}"
   instance_type = "t2.small"
-  // region        = "us-west-2 or us-east-1"
+  region        = var.region
   source_ami_filter {
     filters = {
       name                = "ubuntu/images/*ubuntu-jammy-22.04-amd64-server-*"
