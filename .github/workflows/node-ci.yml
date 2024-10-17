@@ -48,19 +48,3 @@ jobs:
         DB_PORT: 5432
       run: npm test
 
-    - name: Upload Entire Repository as Artifact
-      uses: actions/upload-artifact@v3
-      with:
-        name: webapp-code
-        path: |
-          src
-          app.sh
-          systemsetup.sh
-          myapp.service 
-          server.js
-
-    - name: Verify Artifact
-      run: |
-        # List the files in the artifact
-        echo "Files in the artifact:"
-        ls -R .  # List all files recursively

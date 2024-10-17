@@ -8,9 +8,9 @@ packer {
 }
 
 source "amazon-ebs" "ubuntu" {
-  access_key    = "AKIAVY2PGM26NEBQF5U6"
-  secret_key    = "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"
-  ami_name      = "ubuntu-app-working-build" 
+  access_key    = "${env("AWS_ACCESS_KEY_ID")}"
+  secret_key    = "${env("AWS_SECRET_ACCESS_KEY")}"
+  ami_name      = "ubuntu-app-working-build-for-actions" 
   instance_type = "t2.small"
   region        = "us-west-2"
   source_ami_filter {
@@ -27,7 +27,7 @@ source "amazon-ebs" "ubuntu" {
 
 variable "webapp_code_dir" {
   type    = string
-  default = "./webapp/"  # Default value for local development, overridden by GitHub Actions
+  default = "."  // Changed to root directory
 }
 
 build {
@@ -37,20 +37,20 @@ build {
   ]
 
   provisioner "shell" {
-    script = "./systemsetup.sh"
+    script = "${var.webapp_code_dir}/systemsetup.sh"
   }
 
   provisioner "file" {
-    source      = var.webapp_code_dir
+    source      = "${var.webapp_code_dir}"
     destination = "/opt/apps/webapp"
   }
 
   provisioner "file" {
-    source      = "./myapp.service"
+    source      = "${var.webapp_code_dir}/myapp.service"
     destination = "/home/ubuntu/myapp.service"
   }
 
   provisioner "shell" {
-    script = "./app.sh"
+    script = "${var.webapp_code_dir}/app.sh"
   }
 }
