@@ -7,6 +7,11 @@ packer {
   }
 }
 
+variable "app_name" {
+  type    = string
+  default = "webapp" 
+}
+
 source "amazon-ebs" "ubuntu" {
   // profile       = "dev"
   ami_name        = "csye6225-${var.app_name}-${formatdate("YYYY_MM_DD_hh_mm_ss", timestamp())}" 
