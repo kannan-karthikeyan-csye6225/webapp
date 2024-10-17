@@ -12,6 +12,10 @@ variable "app_name" {
   default = "webapp" 
 }
 
+variable "DB_USER" {}
+variable "DB_PASSWORD" {}
+variable "DB_NAME" {}
+
 source "amazon-ebs" "ubuntu" {
   // profile       = "dev"
   ami_name        = "csye6225-${var.app_name}-${formatdate("YYYY_MM_DD_hh_mm_ss", timestamp())}" 
@@ -42,6 +46,10 @@ build {
 
   provisioner "shell" {
     script = "${var.webapp_code_dir}/systemsetup.sh"
+    environment_vars = [
+      "DB_USER={{user `DB_USER`}}",
+      "DB_PASSWORD={{user `DB_PASSWORD`}}"
+    ]
   }
 
   provisioner "shell" {
