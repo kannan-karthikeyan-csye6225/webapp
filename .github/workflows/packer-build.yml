@@ -22,7 +22,7 @@ jobs:
       - name: Setup Packer
         uses: hashicorp/setup-packer@main
         with:
-          version: '1.8.7'  # You can specify the Packer version you want to use
+          version: '1.8.7'  
 
       - name: Create .env file
         run: |
@@ -36,4 +36,4 @@ jobs:
 
       - name: Run Packer build
         run: |
-            packer build -var "DB_USER=${{ secrets.DB_USER }}" -var "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" -var "DB_NAME=${{ secrets.DB_NAME }}" webapp.pkr.hcl
+            packer build -var "DB_USER=${{ secrets.DB_USER }}" -var "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" -var "DB_NAME=${{ secrets.DB_NAME }}" -var "region=${{ secrets.AWS_REGION }}" webapp.pkr.hcl

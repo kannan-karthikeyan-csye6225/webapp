@@ -19,7 +19,6 @@ jobs:
       - name: Run Packer fmt check
         run: |
           packer fmt -check .
-        # Fail if packer fmt modifies the template
         if: failure()
 
   packer-validate:
