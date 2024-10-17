@@ -12,9 +12,17 @@ variable "app_name" {
   default = "webapp" 
 }
 
-variable "DB_USER" {}
-variable "DB_PASSWORD" {}
-variable "DB_NAME" {}
+variable "DB_USER" {
+  type = string
+}
+
+variable "DB_PASSWORD" {
+  type = string
+}
+
+variable "DB_NAME" {
+  type = string
+}
 
 source "amazon-ebs" "ubuntu" {
   // profile       = "dev"
