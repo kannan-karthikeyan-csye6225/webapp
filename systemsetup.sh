@@ -19,9 +19,9 @@ sudo service postgresql start
 echo 'PostgreSQL installed and started!'
 
 #Create a User in Postgres and grant privileges
-sudo -u postgres psql -c "CREATE USER kannankarthikeyan WITH SUPERUSER CREATEDB PASSWORD 'pass';"
-sudo -u postgres psql -c "CREATE DATABASE healthDB OWNER kannankarthikeyan;"
-echo 'User Created!'
+sudo -u postgres psql -c "CREATE USER ${DB_USER} WITH SUPERUSER CREATEDB PASSWORD '${DB_PASSWORD}';"
+sudo -u postgres psql -c "CREATE DATABASE ${DB_NAME} OWNER ${DB_USER};"
+echo "User ${DB_USER} and database healthDB created!"
 
 #Create a group csye6225 and add the user csye6225 to the group - user has no login attribute
 sudo groupadd csye6225
