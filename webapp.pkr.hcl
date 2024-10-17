@@ -10,8 +10,8 @@ packer {
 source "amazon-ebs" "ubuntu" {
   access_key    = "AKIAVY2PGM26NEBQF5U6"
   secret_key    = "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"
-  ami_name      = "ubuntu-setup-node-postgres-userperms-integrationtest"
-  instance_type = "t2.micro"
+  ami_name      = "ubuntu-final-setup-3" 
+  instance_type = "t2.small"
   region        = "us-west-2"
   source_ami_filter {
     filters = {
@@ -36,8 +36,13 @@ build {
   }
 
   provisioner "file" {
-    source      = "./webapp-main"
-    destination = "/opt/apps/webapp-main"
+    source      = "../webapp-main"
+    destination = "/opt/apps"
+  }
+
+  provisioner "file" {
+    source      = "./myapp.service"
+    destination = "/home/ubuntu/myapp.service"
   }
 
   provisioner "shell" {
