@@ -7,23 +7,6 @@ packer {
   }
 }
 
-variable "app_name" {
-  type    = string
-  default = "webapp" 
-}
-
-variable "DB_USER" {
-  type = string
-}
-
-variable "DB_PASSWORD" {
-  type = string
-}
-
-variable "DB_NAME" {
-  type = string
-}
-
 source "amazon-ebs" "ubuntu" {
   // profile       = "dev"
   ami_name        = "csye6225-${var.app_name}-${formatdate("YYYY_MM_DD_hh_mm_ss", timestamp())}" 
@@ -41,10 +24,6 @@ source "amazon-ebs" "ubuntu" {
   ssh_username = "ubuntu"
 }
 
-variable "webapp_code_dir" {
-  type    = string
-  default = "./"  // Changed to root directory
-}
 
 build {
   name = "user-creation-testing"
@@ -55,8 +34,9 @@ build {
   provisioner "shell" {
     script = "${var.webapp_code_dir}/systemsetup.sh"
     environment_vars = [
-      "DB_USER={{user `DB_USER`}}",
-      "DB_PASSWORD={{user `DB_PASSWORD`}}"
+      "DB_USER=${var.DB_USER}",
+      "DB_PASSWORD=${var.DB_PASSWORD}",
+      "DB_NAME=${var.DB_NAME}"
     ]
   }
 
