@@ -53,7 +53,7 @@ jobs:
       with:
         name: webapp-code
         path: |
-          src/
+          src
           app.sh
           systemsetup.sh
           myapp.service 
