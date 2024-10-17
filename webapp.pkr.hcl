@@ -7,6 +7,16 @@ packer {
   }
 }
 
+variable "webapp_code_dir" {
+  type    = string
+  default = "./"  # Points to the root directory of the repo
+}
+
+variable "app_name" {
+  type    = string
+  default = "webapp"
+}
+
 source "amazon-ebs" "ubuntu" {
   // profile       = "dev"
   ami_name        = "csye6225-${var.app_name}-${formatdate("YYYY_MM_DD_hh_mm_ss", timestamp())}" 
