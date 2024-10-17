@@ -3,13 +3,13 @@ Description=My Node.js App
 After=network.target postgresql.service
 
 [Service]
-ExecStart=/usr/bin/node /opt/apps/webapp_fork/server.js
+ExecStart=/usr/bin/node /opt/apps/webapp/server.js
 Restart=always
 User=csye6225
 Group=csye6225
 Environment=PORT=5173
-EnvironmentFile=/opt/apps/webapp_fork/.env
-WorkingDirectory=/opt/apps/webapp_fork
+EnvironmentFile=/opt/apps/webapp/.env
+WorkingDirectory=/opt/apps/webapp
 
 [Install]
 WantedBy=multi-user.target

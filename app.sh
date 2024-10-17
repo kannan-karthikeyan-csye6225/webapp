@@ -1,20 +1,17 @@
 #!/bin/bash
 
-
-
-
 #Change the ownership to csye6225 user and group
-sudo chown -R csye6225:csye6225 /opt/apps/webapp_fork
+sudo chown -R csye6225:csye6225 /opt/apps/webapp
 
 sudo mv /home/ubuntu/myapp.service /etc/systemd/system/myapp.service
 sudo chown root:root /etc/systemd/system/myapp.service
 sudo chmod 644 /etc/systemd/system/myapp.service
 
 #Listing the files in the directory
-ls -l /opt/apps/webapp_fork
+ls -l /opt/apps/webapp
 
 #CD to the relevant directory
-cd /opt/apps/webapp_fork || exit
+cd /opt/apps/webapp || exit
 sudo rm -rf node_modules package-lock.json  ####THIS
 
 #NPM install and run the Integration Test
