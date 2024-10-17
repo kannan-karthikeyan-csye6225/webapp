@@ -1,0 +1,15 @@
+[Unit]
+Description=My Node.js App
+After=network.target postgresql.service
+
+[Service]
+ExecStart=/usr/bin/node /home/csye6225/app/server.js
+Restart=always
+User=csye6225
+Group=csye6225
+Environment=PORT=5173
+EnvironmentFile=/home/csye6225/app/.env
+WorkingDirectory=/home/csye6225/app
+
+[Install]
+WantedBy=multi-user.target
