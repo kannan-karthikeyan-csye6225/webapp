@@ -68,7 +68,7 @@ build {
       "sudo chown root:root /etc/systemd/system/myapp.service",
       "sudo chmod 644 /etc/systemd/system/myapp.service",
       "cd /opt/apps/webapp",
-      "npm install",
+      "sudo -u csye6225 npm install",
       "sudo systemctl daemon-reload",
       "sudo systemctl enable myapp.service",
       "sudo systemctl start myapp.service",
