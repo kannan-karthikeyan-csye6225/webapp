@@ -17,6 +17,21 @@ variable "app_name" {
   default = "webapp"
 }
 
+variable "DB_USER" {
+  type = string
+  default = "default"  # Or you can omit default and pass the value in the CLI
+}
+
+variable "DB_PASSWORD" {
+  type = string
+  default = "default"
+}
+
+variable "DB_NAME" {
+  type = string
+  default = "default"
+}
+
 source "amazon-ebs" "ubuntu" {
   // profile       = "dev"
   ami_name        = "csye6225-${var.app_name}-${formatdate("YYYY_MM_DD_hh_mm_ss", timestamp())}" 
