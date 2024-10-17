@@ -36,8 +36,4 @@ jobs:
 
       - name: Run Packer build
         run: |
-            packer build \
-            -var "DB_USER=${{ secrets.DB_USER }}" \
-            -var "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" \
-            -var "DB_NAME=${{ secrets.DB_NAME }}" \
-            webapp.pkr.hcl
+            packer build -var "DB_USER=${{ secrets.DB_USER }}" -var "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" -var "DB_NAME=${{ secrets.DB_NAME }}" webapp.pkr.hcl
