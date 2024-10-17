@@ -30,5 +30,5 @@ sudo -u csye6225 npm install
 
 sudo systemctl start myapp.service
 
-# Check the status of the service
+# Check the status of the service.
 sudo systemctl status myapp.service
