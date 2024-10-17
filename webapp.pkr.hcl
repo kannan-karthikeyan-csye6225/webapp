@@ -16,7 +16,7 @@ source "amazon-ebs" "ubuntu" {
   // profile       = "dev"
   ami_name        = "csye6225-${var.app_name}-${formatdate("YYYY_MM_DD_hh_mm_ss", timestamp())}" 
   instance_type = "t2.small"
-  // region        = "us-west-2"
+  // region        = "us-west-2 or us-east-1"
   source_ami_filter {
     filters = {
       name                = "ubuntu/images/*ubuntu-jammy-22.04-amd64-server-*"
