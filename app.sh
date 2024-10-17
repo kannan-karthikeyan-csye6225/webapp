@@ -15,7 +15,14 @@ cd /opt/apps/webapp || exit
 sudo rm -rf node_modules package-lock.json  ####THIS
 
 #NPM install and run the Integration Test
-
+cat <<EOL > .env
+PORT=5173
+DB_NAME=healthDB
+DB_USER=kannankarthikeyan
+DB_PASSWORD=pass
+DB_HOST=localhost
+DB_PORT=5432
+EOL
 
 # Start the Node.js app using systemd service
 echo 'Enabling and starting the Node.js app service...'
