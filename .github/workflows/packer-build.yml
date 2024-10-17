@@ -24,6 +24,13 @@ jobs:
         with:
           version: '1.8.7'  # You can specify the Packer version you want to use
 
+      - name: Create .env file
+        run: |
+          echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
+          echo "DB_USER=${{ secrets.DB_USER }}" >> .env
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+          echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
+
       - name: Initialize Packer
         run: packer init .
 

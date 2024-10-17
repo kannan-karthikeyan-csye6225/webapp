@@ -44,6 +44,13 @@ build {
     script = "${var.webapp_code_dir}/systemsetup.sh"
   }
 
+  provisioner "shell" {
+    inline = [
+      "sudo mkdir -p /opt/apps/webapp",
+      "sudo chown ubuntu:ubuntu /opt/apps/webapp"
+    ]
+  }
+
   provisioner "file" {
     source      = "${var.webapp_code_dir}"
     destination = "/opt/apps/webapp"
@@ -51,10 +58,21 @@ build {
 
   provisioner "file" {
     source      = "${var.webapp_code_dir}/myapp.service"
-    destination = "/home/ubuntu/myapp.service"
+    destination = "/tmp/myapp.service"
   }
 
   provisioner "shell" {
-    script = "${var.webapp_code_dir}/app.sh"
+    inline = [
+      "sudo chown -R csye6225:csye6225 /opt/apps/webapp",
+      "sudo mv /tmp/myapp.service /etc/systemd/system/myapp.service",
+      "sudo chown root:root /etc/systemd/system/myapp.service",
+      "sudo chmod 644 /etc/systemd/system/myapp.service",
+      "cd /opt/apps/webapp",
+      "npm install",
+      "sudo systemctl daemon-reload",
+      "sudo systemctl enable myapp.service",
+      "sudo systemctl start myapp.service",
+      "sudo systemctl status myapp.service"
+    ]
   }
 }
