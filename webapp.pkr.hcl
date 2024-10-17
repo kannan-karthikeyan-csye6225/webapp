@@ -54,12 +54,6 @@ build {
   provisioner "file" {
     source      = "${var.webapp_code_dir}"
     destination = "/opt/apps/webapp"
-    exclude = [
-      ".git",
-      ".github",
-      "node_modules",
-      "*.pkr.hcl"
-    ]
   }
 
   provisioner "file" {
