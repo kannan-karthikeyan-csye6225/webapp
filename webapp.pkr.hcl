@@ -25,6 +25,11 @@ source "amazon-ebs" "ubuntu" {
   ssh_username = "ubuntu"
 }
 
+variable "webapp_code_dir" {
+  type    = string
+  default = "./webapp/"  # Default value for local development, overridden by GitHub Actions
+}
+
 build {
   name = "user-creation-testing"
   sources = [
@@ -36,7 +41,7 @@ build {
   }
 
   provisioner "file" {
-    source      = "../webapp/"
+    source      = var.webapp_code_dir
     destination = "/opt/apps/webapp"
   }
 
