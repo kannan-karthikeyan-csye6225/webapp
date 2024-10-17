@@ -9,7 +9,7 @@ packer {
 
 source "amazon-ebs" "ubuntu" {
   // profile       = "dev"
-  ami_name      = "ubuntu-app-working-build-for-actions" 
+  ami_name        = "csye6225-${var.app_name}-${formatdate("YYYY_MM_DD_hh_mm_ss", timestamp())}" 
   instance_type = "t2.small"
   // region        = "us-west-2"
   source_ami_filter {
@@ -26,7 +26,7 @@ source "amazon-ebs" "ubuntu" {
 
 variable "webapp_code_dir" {
   type    = string
-  default = "."  // Changed to root directory
+  default = "./"  // Changed to root directory
 }
 
 build {
