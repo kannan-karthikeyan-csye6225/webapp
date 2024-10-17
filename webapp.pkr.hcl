@@ -11,7 +11,7 @@ source "amazon-ebs" "ubuntu" {
   // profile       = "dev"
   ami_name      = "ubuntu-app-working-build-for-actions" 
   instance_type = "t2.small"
-  region        = "us-west-2"
+  // region        = "us-west-2"
   source_ami_filter {
     filters = {
       name                = "ubuntu/images/*ubuntu-jammy-22.04-amd64-server-*"
