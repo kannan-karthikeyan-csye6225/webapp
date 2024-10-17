@@ -10,7 +10,7 @@ packer {
 source "amazon-ebs" "ubuntu" {
   access_key    = "AKIAVY2PGM26NEBQF5U6"
   secret_key    = "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"
-  ami_name      = "ubuntu-final-setup-3" 
+  ami_name      = "ubuntu-app-build" 
   instance_type = "t2.small"
   region        = "us-west-2"
   source_ami_filter {
@@ -36,7 +36,7 @@ build {
   }
 
   provisioner "file" {
-    source      = "../webapp-main"
+    source      = "../webapp_fork"
     destination = "/opt/apps"
   }
 
