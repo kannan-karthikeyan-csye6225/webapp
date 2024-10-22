@@ -25,6 +25,6 @@ export const checkHealth = async (req, res) => {
     } else {
         logger.info('Restricted method requested, response is denied');
         res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
-        return res.status(405).send();  // Method not allowed
+        return res.status(405).send();  // Method not allowed - exists only for HEAD method
     }
 };

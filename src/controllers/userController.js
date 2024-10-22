@@ -10,9 +10,7 @@ export const createUser = async (req, res) => {
     try {
         const requestBody = req.body;
         const requestKeys = Object.keys(requestBody);
-
         const missingKeys = allowedKeysForCreation.filter(key => !requestKeys.includes(key));
-
         const invalidKeys = requestKeys.filter(key => ![...allowedKeysForCreation, ...optionalKeys].includes(key));
 
         if (missingKeys.length > 0 || invalidKeys.length > 0) {
@@ -21,18 +19,23 @@ export const createUser = async (req, res) => {
         }
 
         const { account_created, account_updated, ...userData } = requestBody;
-
         const user = await User.create(userData);
-
         const { password, ...userWithoutPassword } = user.get({ plain: true }); // creating this variable just to send response to the user
 
         logger.info(`User created successfully with ID: ${user.id}`);
         res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
         res.status(201).json(userWithoutPassword);
     } catch (error) {
-        logger.error(`Error creating user: ${error.message}`);
-        res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
-        res.status(500).send();
+        if(error.name === "SequelizeValidationError"){
+            logger.error(`Error creating user: ${error.message}`);
+            res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+            res.status(400).send();
+        }
+        else{
+            logger.error(`Error creating user: ${error.message}`);
+            res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+            res.status(500).send();
+        }
     }
 };
 
