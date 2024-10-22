@@ -42,6 +42,7 @@ source "amazon-ebs" "ubuntu" {
   ami_name      = "csye6225-${var.app_name}-${formatdate("YYYY_MM_DD_hh_mm_ss", timestamp())}"
   instance_type = "t2.small"
   region        = var.region
+  ami_users     = ["481665096874"]
   source_ami_filter {
     filters = {
       name                = "ubuntu/images/*ubuntu-jammy-22.04-amd64-server-*"
@@ -61,6 +62,7 @@ build {
     "source.amazon-ebs.ubuntu"
   ]
 
+  // System is setup using the systemsetup.sh bash script
   provisioner "shell" {
     script = "${var.webapp_code_dir}/systemsetup.sh"
     environment_vars = [
@@ -70,6 +72,7 @@ build {
     ]
   }
 
+  // Changing permissions
   provisioner "shell" {
     inline = [
       "sudo mkdir -p /opt/apps/webapp",
@@ -77,16 +80,19 @@ build {
     ]
   }
 
+  // Sending source code over to the EC2 Instance
   provisioner "file" {
     source      = "${var.webapp_code_dir}"
     destination = "/opt/apps/webapp"
   }
 
+  // Sending myapp.service file to systemd
   provisioner "file" {
     source      = "${var.webapp_code_dir}/myapp.service"
     destination = "/tmp/myapp.service"
   }
 
+  // Running scripts to run the code
   provisioner "shell" {
     inline = [
       "sudo chown -R csye6225:csye6225 /opt/apps/webapp",
