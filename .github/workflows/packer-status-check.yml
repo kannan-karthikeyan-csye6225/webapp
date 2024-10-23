@@ -19,7 +19,6 @@ jobs:
       - name: Run Packer fmt check
         run: |
           packer fmt -check .
-        if: failure()
 
   packer-validate:
     runs-on: ubuntu-latest
