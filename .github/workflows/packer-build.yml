@@ -24,16 +24,9 @@ jobs:
         with:
           version: '1.8.7'  
 
-      - name: Create .env file
-        run: |
-          echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
-          echo "DB_USER=${{ secrets.DB_USER }}" >> .env
-          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
-          echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
-
       - name: Initialize Packer
         run: packer init .
 
       - name: Run Packer build
         run: |
-            packer build -var "DB_USER=${{ secrets.DB_USER }}" -var "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" -var "DB_NAME=${{ secrets.DB_NAME }}" -var "region=${{ secrets.AWS_REGION }}" webapp.pkr.hcl
+            packer build webapp.pkr.hcl

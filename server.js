@@ -11,7 +11,7 @@ app.use(express.json());
 
 const port = process.env.PORT || 3000;
 app.use('/healthz', healthRoute);
-app.use('/v2/user', userRoute);
+app.use('/v1/user', userRoute);
 
 app.listen(port, () => {
     logger.info(`Server is running on PORT ${port}`);

@@ -1,68 +1,36 @@
 import { Sequelize } from 'sequelize';
 import dotenv from 'dotenv';
-import pkg from 'pg';
 
-const { Client } = pkg;
-dotenv.config();
+// Try to load .env file if it exists, but don't fail if it doesn't
+dotenv.config({ silent: true });
 
-let isDatabaseConnected = true;  // Flag to track DB connection status
-
-const createDatabaseIfNotExists = async () => {
-  try {
-    const client = new Client({
-      host: process.env.DB_HOST,
-      port: process.env.DB_PORT,
-      user: process.env.DB_USER,
-      password: process.env.DB_PASSWORD,
-      database: 'postgres',
-    });
-
-    await client.connect();
-
-    const dbName = process.env.DB_NAME;
-    const res = await client.query(`SELECT 1 FROM pg_database WHERE datname='${dbName}'`);
-
-    if (res.rowCount === 0) {
-      await client.query(`CREATE DATABASE "${dbName}"`);
-      console.log(`Database "${dbName}" created successfully!`);
-    } else {
-      console.log(`Database "${dbName}" already exists.`);
-    }
-
-    await client.end();
-  } catch (error) {
-    console.error('Error creating database'); // removed the error logging for clean console outputs
-    isDatabaseConnected = false;  // Set flag to false if DB creation fails
-    // throw error;
-  }
-};
-
-const initializeSequelize = async () => {
-  try {
-    await createDatabaseIfNotExists();
-  } catch (error) {
-    console.error('Database is offline or cannot be created'); // removed the error logging for clean console outputs
-    isDatabaseConnected = false;  // Set flag to false if DB connection fails
-  }
-
-  const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASSWORD, {
-    host: process.env.DB_HOST,
-    port: process.env.DB_PORT,
+// Use environment variables with fallbacks for local development
+export const sequelize = new Sequelize(
+  process.env.DB_NAME || 'csye6225',
+  process.env.DB_USER || 'csye6225',
+  process.env.DB_PASSWORD || 'default_password',
+  {
+    host: process.env.DB_HOST?.split(':')[0] || 'localhost',
+    port: parseInt(process.env.DB_PORT || '5432', 10),
     dialect: 'postgres',
-    logging: false,
-  });
-
-  try {
-    await sequelize.authenticate();
-    console.log('Connection to the database has been established successfully.');
-  } catch (error) {
-    console.error('Unable to connect to the database'); // removed the error logging for clean console outputs
-    isDatabaseConnected = false;  // Set flag to false if DB connection fails
+    logging: console.log,
+    dialectOptions: {
+      connectTimeout: 60000 // 60 seconds
+    },
+    retry: {
+      max: 5, // Maximum retry 5 times
+      timeout: 3000 // 3 seconds timeout between retries
+    }
   }
+);
 
-  return sequelize;
-};
-
-const sequelize = await initializeSequelize();
-
-export { sequelize, isDatabaseConnected };
+// Add connection error handling
+sequelize
+  .authenticate()
+  .then(() => {
+    console.log('Database connection established successfully.');
+  })
+  .catch(err => {
+    console.warn('Unable to connect to the database:', err);
+    // Don't exit the process, let the application continue running
+  });

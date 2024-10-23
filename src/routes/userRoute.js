@@ -10,8 +10,12 @@ const router = express.Router();
 router
     .route('/')
     .post(checkDuplicateEmail, createUser)
+    .all(methodNotAllowed);
+
+router
+    .route('/self')
     .get(checkPayload, basicAuthMiddleware, getUser)
     .put(basicAuthMiddleware, checkPayload, updateUser)
-    .all(methodNotAllowed)
+    .all(methodNotAllowed);
 
 export default router;
