@@ -102,7 +102,15 @@ export const updateUser = async (req, res) => {
         logger.info(`User with email: ${user.email} updated successfully`);
         res.status(204).send();
     } catch (error) {
-        logger.error(`Error updating user: ${error.message}`);
-        res.status(500).send();
+        if(error.name === "SequelizeValidationError"){
+            logger.error(`Error creating user: ${error.message}`);
+            res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+            res.status(400).send();
+        }
+        else {
+            logger.error(`Error updating user: ${error.message}`);
+            res.status(500).send();
+        }
+
     }
 };
