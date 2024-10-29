@@ -99,7 +99,8 @@ build {
       "cd /opt/apps/webapp",
       "sudo -u csye6225 npm install",
       "sudo systemctl daemon-reload",
-      "sudo systemctl enable myapp.service"
+      "sudo systemctl enable myapp.service",
+      "sudo systemctl enable amazon-cloudwatch-agent"
     ]
   }
 }

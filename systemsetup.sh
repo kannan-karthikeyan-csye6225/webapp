@@ -14,7 +14,8 @@ echo 'Node installed to version'
 node -v
 
 # Install the CloudWatch Agent
-sudo apt-get install -y amazon-cloudwatch-agent #CLOUDWATCH
+sudo wget https://s3.amazonaws.com/amazoncloudwatch-agent/debian/amd64/latest/amazon-cloudwatch-agent.deb
+sudo dpkg -i -E ./amazon-cloudwatch-agent.deb
 
 #Create a group csye6225 and add the user csye6225 to the group - user has no login attribute
 sudo groupadd csye6225
