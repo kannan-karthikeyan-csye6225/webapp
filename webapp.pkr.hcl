@@ -41,7 +41,7 @@ variable "DB_NAME" {
 
 source "amazon-ebs" "ubuntu" {
   // profile       = "dev"
-  ami_name      = "csye6225-${var.app_name}-${formatdate("YYYY_MM_DD_hh_mm_ss", timestamp())}"
+  ami_name      = "A06-csye6225-${var.app_name}-${formatdate("YYYY_MM_DD_hh_mm_ss", timestamp())}"
   instance_type = "t2.small"
   region        = var.region
   ami_users     = ["481665096874"]
@@ -85,10 +85,17 @@ build {
     destination = "/tmp/myapp.service"
   }
 
+  provisioner "file" {
+  source      = "${var.webapp_code_dir}/amazon-cloudwatch-agent.json"
+  destination = "/tmp/amazon-cloudwatch-agent.json"
+}
+
   provisioner "shell" {
     inline = [
       "sudo chown -R csye6225:csye6225 /opt/apps/webapp",
       "sudo mv /tmp/myapp.service /etc/systemd/system/myapp.service",
+      "sudo mkdir -p /opt/aws/amazon-cloudwatch-agent/etc",
+      "sudo mv /tmp/amazon-cloudwatch-agent.json /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json",
       "sudo chown root:root /etc/systemd/system/myapp.service",
       "sudo chmod 644 /etc/systemd/system/myapp.service",
       "cd /opt/apps/webapp",
