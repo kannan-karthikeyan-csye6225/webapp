@@ -7,8 +7,6 @@ packer {
   }
 }
 
-#road block
-
 variable "webapp_code_dir" {
   type    = string
   default = "./"
@@ -86,9 +84,9 @@ build {
   }
 
   provisioner "file" {
-  source      = "${var.webapp_code_dir}/amazon-cloudwatch-agent.json"
-  destination = "/tmp/amazon-cloudwatch-agent.json"
-}
+    source      = "${var.webapp_code_dir}/amazon-cloudwatch-agent.json"
+    destination = "/tmp/amazon-cloudwatch-agent.json"
+  }
 
   provisioner "shell" {
     inline = [
