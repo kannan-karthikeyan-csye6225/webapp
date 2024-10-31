@@ -1,9 +1,15 @@
-import { StatsD } from 'hot-shots';
+import StatsD from 'hot-shots';
+import logger from './logger.js';
 
-const statsdClient = new StatsD({
-  host: '127.0.0.1', // assuming StatsD runs locally on the EC2 instance
-  port: 8125,
-  prefix: 'webapp.', // Prefix for all metrics
+
+const statsd = new StatsD({
+  host: process.env.STATSD_HOST || 'localhost',
+  port: process.env.STATSD_PORT || 8125,
+  prefix: 'webapp.',
+  errorHandler: error => {
+    logger.error('StatsD error:', error);
+  }
 });
 
-export default statsdClient;
+
+export default statsd;

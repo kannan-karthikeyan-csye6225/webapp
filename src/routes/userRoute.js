@@ -8,18 +8,19 @@ import { checkDuplicateEmail } from '../middlewares/checkDuplicateUser.js';
 import { handleUpload } from '../middlewares/uploadMiddleware.js';
 import { errorHandler } from '../middlewares/errorHandler.js';
 import { validateProfilePicUpload, validateProfilePicGet, validateProfilePicDelete } from '../middlewares/validateRequest.js';
+import { metricMiddleware } from '../middlewares/metricMiddleware.js';
 
 const router = express.Router();
 
 router
     .route('/')
-    .post(checkDuplicateEmail, createUser)
+    .post(metricMiddleware, checkDuplicateEmail, createUser)
     .all(methodNotAllowed);
 
 router
     .route('/self')
-    .get(checkPayload, basicAuthMiddleware, getUser)
-    .put(basicAuthMiddleware, checkPayload, updateUser)
+    .get(metricMiddleware, checkPayload, basicAuthMiddleware, getUser)
+    .put(metricMiddleware, basicAuthMiddleware, checkPayload, updateUser)
     .all(methodNotAllowed);
 
 router
