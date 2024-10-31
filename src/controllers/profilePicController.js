@@ -1,5 +1,5 @@
 import { PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
-import { s3Client } from '../config/s3.js';
+import { s3Client, trackS3Operation } from '../config/s3.js';
 import User from '../models/index.js';
 import UserProfilePic from '../models/userProfilePic.js';
 import logger from '../config/logger.js';
@@ -49,7 +49,10 @@ export const uploadProfilePic = async (req, res, next) => {
     };
 
     // Upload to S3
-    await s3Client.send(new PutObjectCommand(uploadParams));
+    await trackS3Operation(
+      () => s3Client.send(new PutObjectCommand(uploadParams)),
+      'upload'
+  );
 
     // Save metadata to database and get the created record
     const createdProfilePic = await UserProfilePic.create({
@@ -153,7 +156,10 @@ export const deleteProfilePic = async (req, res, next) => {
       Key: profilePic.s3_bucket_path
     };
 
-    await s3Client.send(new DeleteObjectCommand(deleteParams));
+    await trackS3Operation(
+      () => s3Client.send(new DeleteObjectCommand(deleteParams)),
+      'delete'
+    );
     await profilePic.destroy();
 
     logger.info(`Profile picture deleted successfully for user: ${user.id}`);
