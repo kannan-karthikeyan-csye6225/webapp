@@ -32,8 +32,35 @@
         "totalcpu": true
       },
       "statsd": {
+        "service_address": ":8125",
+        "metrics_collection_interval": 60,
         "metrics_aggregation_interval": 60,
-        "service_address": ":8125"
+        "metric_separator": ".",
+        "metrics_collection_enabled": true,
+        "preferred_aggregation_type": "average",
+        "pipeline": [
+          {
+            "source": "statsd",
+            "destination": "cloudwatch",
+            "rules": [
+              {
+                "pattern": "webapp.api.*.*.count",
+                "type": "count",
+                "output_format": "webapp.api.$1.$2.count"
+              },
+              {
+                "pattern": "webapp.api.*.*.duration",
+                "type": "timing",
+                "output_format": "webapp.api.$1.$2.duration"
+              },
+              {
+                "pattern": "webapp.database.query.duration",
+                "type": "timing",
+                "output_format": "webapp.database.query.duration"
+              }
+            ]
+          }
+        ]
       }
     }
   },
