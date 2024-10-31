@@ -1,6 +1,5 @@
 import logger from '../config/logger.js';
 import checkDatabaseHealth from '../services/healthService.js';
-import statsdClient from '../config/statsd.js';
 
 export const checkHealth = async (req, res) => {
     const isDatabaseHealthy = await checkDatabaseHealth();
@@ -12,11 +11,6 @@ export const checkHealth = async (req, res) => {
             logger.info('Request contains query params or body - Response will be denied');
             return res.status(400).send();
         }
-
-        const dbStartTime = Date.now();
-        const isDatabaseHealthy = await checkDatabaseHealth();
-        const dbDuration = Date.now() - dbStartTime;
-        statsdClient.timing('db.query.health_check.time', dbDuration);
 
         // Checking connection with the DB
         if (isDatabaseHealthy) {

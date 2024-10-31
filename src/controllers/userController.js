@@ -1,109 +1,116 @@
 import User from '../models/index.js';
 import logger from '../config/logger.js';
-import statsdClient from '../config/statsd.js';
+import { request } from 'express';
 
 const allowedKeysForCreation = ['first_name', 'last_name', 'email', 'password'];
+const optionalKeys = ['account_created', 'account_updated'];
 const allowedKeysForUpdation = ['first_name', 'last_name', 'password'];
 
 export const createUser = async (req, res) => {
-    const startTime = Date.now();
     try {
         const requestBody = req.body;
         const requestKeys = Object.keys(requestBody);
         const missingKeys = allowedKeysForCreation.filter(key => !requestKeys.includes(key));
-        const invalidKeys = requestKeys.filter(key => !allowedKeysForCreation.includes(key));
+        const invalidKeys = requestKeys.filter(key => ![...allowedKeysForCreation, ...optionalKeys].includes(key));
 
         if (missingKeys.length > 0 || invalidKeys.length > 0) {
             logger.info('Payload contains invalid or missing keys');
-            res.status(400).send();
-            return;
+            return res.status(400).send();
         }
 
-        const dbStartTime = Date.now();
-        const user = await User.create(requestBody);
-        const dbDuration = Date.now() - dbStartTime;
-        statsdClient.timing('db.query.create_user.time', dbDuration);
+        const { account_created, account_updated, ...userData } = requestBody;
+        const user = await User.create(userData);
+        const { password, ...userWithoutPassword } = user.get({ plain: true }); // creating this variable just to send response to the user
 
         logger.info(`User created successfully with ID: ${user.id}`);
-        res.status(201).json(user);
-        statsdClient.increment('api.post_user'); // API call count
+        res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+        res.status(201).json(userWithoutPassword);
     } catch (error) {
-        logger.error(`Error creating user: ${error.message}`);
-        res.status(error.name === 'SequelizeValidationError' ? 400 : 500).send();
-    } finally {
-        const duration = Date.now() - startTime;
-        statsdClient.timing('api.post_user.time', duration); // API response time
+        if(error.name === "SequelizeValidationError"){
+            logger.error(`Error creating user: ${error.message}`);
+            res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+            res.status(400).send();
+        }
+        else{
+            logger.error(`Error creating user: ${error.message}`);
+            res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+            res.status(500).send();
+        }
     }
 };
 
 export const getUser = async (req, res) => {
-    const startTime = Date.now();
     try {
-        const userEmail = req.auth.user;
-        
-        const dbStartTime = Date.now();
+        const userEmail = req.auth.user; 
         const user = await User.findOne({ where: { email: userEmail } });
-        const dbDuration = Date.now() - dbStartTime;
-        statsdClient.timing('db.query.get_user.time', dbDuration);
 
         if (!user) {
             logger.info(`User not found with email: ${userEmail}`);
-            res.status(404).send();
-            return;
+            res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+            return res.status(404).send();
         }
 
-        logger.info(`User retrieved successfully with email: ${userEmail}`);
-        res.status(200).json(user);
-        statsdClient.increment('api.get_user'); // API call count
+        const { id, first_name, last_name, email, account_created, account_updated } = user;
+
+        if (req.method === 'GET'){ // Explicitly mentioning this if statement because HEAD method will send a 200 without this
+            res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+            res.status(200).json({
+                id,
+                first_name,
+                last_name,
+                email,
+                account_created,
+                account_updated
+            });
+        }
+        else{
+            res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+            res.status(405).send();
+        }
     } catch (error) {
         logger.error(`Error fetching user: ${error.message}`);
         res.status(500).send();
-    } finally {
-        const duration = Date.now() - startTime;
-        statsdClient.timing('api.get_user.time', duration); // API response time
     }
 };
 
 export const updateUser = async (req, res) => {
-    const startTime = Date.now();
     try {
         const requestBody = req.body;
         const requestKeys = Object.keys(requestBody);
+
         const missingKeys = allowedKeysForUpdation.filter(key => !requestKeys.includes(key));
         const hasInvalidKeys = requestKeys.some(key => !allowedKeysForUpdation.includes(key)) || missingKeys.length > 0;
 
         if (hasInvalidKeys) {
             logger.info('Payload contains invalid or missing keys for PUT request');
-            res.status(400).send();
-            return;
+            return res.status(400).send();
         }
 
-        const userEmail = req.auth.user;
-
-        const dbStartTime = Date.now();
-        const user = await User.findOne({ where: { email: userEmail } });
-        const dbDuration = Date.now() - dbStartTime;
-        statsdClient.timing('db.query.update_user.time', dbDuration);
+        const user = await User.findOne({ where: { email: req.auth.user } });
 
         if (!user) {
-            logger.info("User not found for update");
-            res.status(404).send();
-            return;
+            logger.info("User not found - check userController - updateUser function")
+            return res.status(404).send();
         }
 
         user.first_name = requestBody.first_name;
         user.last_name = requestBody.last_name;
         user.password = requestBody.password;
+
         await user.save();
 
-        logger.info(`User with email: ${userEmail} updated successfully`);
+        logger.info(`User with email: ${user.email} updated successfully`);
         res.status(204).send();
-        statsdClient.increment('api.put_user'); // API call count
     } catch (error) {
-        logger.error(`Error updating user: ${error.message}`);
-        res.status(500).send();
-    } finally {
-        const duration = Date.now() - startTime;
-        statsdClient.timing('api.put_user.time', duration); // API response time
+        if(error.name === "SequelizeValidationError"){
+            logger.error(`Error creating user: ${error.message}`);
+            res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+            res.status(400).send();
+        }
+        else {
+            logger.error(`Error updating user: ${error.message}`);
+            res.status(500).send();
+        }
+
     }
 };
