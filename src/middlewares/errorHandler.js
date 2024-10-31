@@ -1,3 +1,6 @@
+import multer from 'multer';
+import logger from '../config/logger.js';
+
 export const errorHandler = (err, req, res, next) => {
     if (err instanceof multer.MulterError) {
       logger.error(`Multer error: ${err.message}`);

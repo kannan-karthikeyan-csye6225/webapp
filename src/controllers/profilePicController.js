@@ -1,6 +1,5 @@
 import { PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
 import { s3Client } from '../config/s3.js';
-import { trackS3Operation } from '../middlewares/s3Metrics.js';
 import User from '../models/index.js';
 import UserProfilePic from '../models/userProfilePic.js';
 import logger from '../config/logger.js';
@@ -48,8 +47,6 @@ export const uploadProfilePic = async (req, res, next) => {
         'upload-date': new Date().toISOString()
       }
     };
-
-    await trackS3Operation(PutObjectCommand, uploadParams, 'upload');
 
     // Upload to S3
     await s3Client.send(new PutObjectCommand(uploadParams));
@@ -155,8 +152,6 @@ export const deleteProfilePic = async (req, res, next) => {
       Bucket: process.env.S3_BUCKET_NAME,
       Key: profilePic.s3_bucket_path
     };
-
-    await trackS3Operation(DeleteObjectCommand, deleteParams, 'delete');
 
     await s3Client.send(new DeleteObjectCommand(deleteParams));
     await profilePic.destroy();
