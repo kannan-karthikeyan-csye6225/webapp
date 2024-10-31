@@ -10,18 +10,25 @@
   "jest": {
     "testEnvironment": "node",
     "transform": {},
-    "moduleDirectories": ["node_modules", "src"],
-    "testMatch": ["**/__tests__/**/*.js"],
+    "moduleDirectories": [
+      "node_modules",
+      "src"
+    ],
+    "testMatch": [
+      "**/__tests__/**/*.js"
+    ],
     "verbose": true
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.682.0",
     "bcrypt": "^5.1.1",
     "dotenv": "^16.4.5",
     "express": "^4.21.0",
     "express-basic-auth": "^1.2.1",
+    "multer": "^1.4.5-lts.1",
     "pg": "^8.13.0",
     "pg-hstore": "^2.3.4",
     "sequelize": "^6.37.3",
