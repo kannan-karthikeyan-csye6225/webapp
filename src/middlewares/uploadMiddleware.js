@@ -28,14 +28,14 @@ const uploadConfig = multer({
     fileSize: 5 * 1024 * 1024, // 5MB limit
     files: 1 // Allow only one file
   }
-}).single('profile_pic');
+}).single('profilePic');
 
 export const validateFormFields = (req, res, next) => {
   // Get all field names from the multipart form data
   const formFields = Object.keys(req.body || {});
   
   // Check for any fields other than 'profile_pic'
-  const unexpectedFields = formFields.filter(field => field !== 'profile_pic');
+  const unexpectedFields = formFields.filter(field => field !== 'profilePic');
   
   if (unexpectedFields.length > 0) {
     logger.info(`Unexpected fields in request: ${unexpectedFields.join(', ')}`);
