@@ -189,3 +189,4 @@ Authenticated PUT /v1/user
   - Errors and exceptions during the health check.
   - Denied requests (with payloads or restricted methods).
   
+Prebuilding an AMI
