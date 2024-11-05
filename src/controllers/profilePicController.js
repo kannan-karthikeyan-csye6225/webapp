@@ -31,9 +31,10 @@ export const uploadProfilePic = async (req, res, next) => {
 
     // Prepare file name and S3 path
     const fileExtension = req.file.originalname.split('.').pop();
-    const fileName = `${user.id}-${Date.now()}.${fileExtension}`;
+    const fileName = `image-file.${fileExtension}`; // Fixed name as image-file
     const bucketName = process.env.S3_BUCKET_NAME;
-    const s3Path = `profile-pics/${fileName}`;
+    const userDirectory = `user-${user.id}`; // Create unique directory name with user ID
+    const s3Path = `profile-pics/${userDirectory}/${fileName}`;
 
     // Prepare S3 upload parameters
     const uploadParams = {
@@ -52,7 +53,7 @@ export const uploadProfilePic = async (req, res, next) => {
     await trackS3Operation(
       () => s3Client.send(new PutObjectCommand(uploadParams)),
       'upload'
-  );
+    );
 
     // Save metadata to database and get the created record
     const createdProfilePic = await UserProfilePic.create({
@@ -76,7 +77,7 @@ export const uploadProfilePic = async (req, res, next) => {
     return res.status(201).json({
       file_name: profilePic.file_name,
       id: profilePic.id,
-      url: `${process.env.S3_BUCKET_NAME}/${profilePic.s3_bucket_path}`,
+      url: `${bucketName}/${profilePic.s3_bucket_path}`, // Will be bucket-name/profile-pics/user-123/image-file.ext
       upload_date: profilePic.upload_date.toISOString().split('T')[0],
       user_id: profilePic.user_id
     });
@@ -100,7 +101,6 @@ export const getProfilePic = async (req, res, next) => {
       logger.info('User not found');
       return res.status(404).send();
     }
-
 
     const profilePic = await UserProfilePic.findOne({
       where: { user_id: user.id },
