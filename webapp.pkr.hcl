@@ -39,7 +39,7 @@ variable "DB_NAME" {
 
 source "amazon-ebs" "ubuntu" {
   // profile       = "dev"
-  ami_name      = "A06-csye6225-${var.app_name}-${formatdate("YYYY_MM_DD_hh_mm_ss", timestamp())}"
+  ami_name      = "csye6225-${var.app_name}-${formatdate("YYYY_MM_DD_hh_mm_ss", timestamp())}"
   instance_type = "t2.small"
   region        = var.region
   ami_users     = ["481665096874"]

@@ -3,21 +3,20 @@ import dotenv from 'dotenv';
 import statsd from './statsd.js';
 import logger from './logger.js';
 
-// Try to load .env file if it exists, but don't fail if it doesn't
 dotenv.config({ silent: true });
 
 
 const queryLogger = (query, timing) => {
-  // Log the query
+
   logger.info(`Executing query: ${query}`);
   
-  // If timing is available (from benchmark), send it to StatsD
+
   if (timing) {
     statsd.timing('database.query.duration', timing);
   }
 };
 
-// Use environment variables with fallbacks for local development
+
 export const sequelize = new Sequelize(
   process.env.DB_NAME || 'csye6225',
   process.env.DB_USER || 'csye6225',
@@ -29,16 +28,16 @@ export const sequelize = new Sequelize(
     logging: queryLogger,
     benchmark: true,
     dialectOptions: {
-      connectTimeout: 60000 // 60 seconds
+      connectTimeout: 60000 
     },
     retry: {
-      max: 5, // Maximum retry 5 times
-      timeout: 3000 // 3 seconds timeout between retries
+      max: 5, 
+      timeout: 3000 
     }
   }
 );
 
-// Add connection error handling
+
 sequelize
   .authenticate()
   .then(() => {
