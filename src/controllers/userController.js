@@ -1,6 +1,10 @@
 import User from '../models/index.js';
 import logger from '../config/logger.js';
 import { request } from 'express';
+import { SNS } from '@aws-sdk/client-sns';
+import crypto from 'crypto';
+
+const sns = new SNS({});
 
 const allowedKeysForCreation = ['first_name', 'last_name', 'email', 'password'];
 const optionalKeys = ['account_created', 'account_updated'];
@@ -19,11 +23,31 @@ export const createUser = async (req, res) => {
         }
 
         const { account_created, account_updated, ...userData } = requestBody;
-        const user = await User.create(userData);
-        const { password, ...userWithoutPassword } = user.get({ plain: true }); // creating this variable just to send response to the user
+        const user = await User.create({
+            ...userData,
+            verified: false
+        });
 
-        logger.info(`User created successfully with ID: ${user.id}`);
-        res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+        const verificationToken = crypto.randomBytes(32).toString('hex');
+        
+        const verificationUrl = `${process.env.API_BASE_URL}/v1/user/verify/${user.id}?token=${verificationToken}`;
+
+        try {
+            await sns.publish({
+                TopicArn: process.env.SNS_TOPIC_ARN,
+                Message: JSON.stringify({
+                    email: user.email,
+                    firstName: user.first_name,
+                    verificationUrl: verificationUrl
+                })
+            });
+            
+            logger.info(`Verification email triggered for user: ${user.id}`);
+        } catch (snsError) {
+            logger.error(`Failed to publish to SNS: ${snsError.message}`);
+        }
+
+        const { password, ...userWithoutPassword } = user.get({ plain: true });
         res.status(201).json(userWithoutPassword);
     } catch (error) {
         if(error.name === "SequelizeValidationError"){
@@ -36,6 +60,28 @@ export const createUser = async (req, res) => {
             res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
             res.status(500).send();
         }
+    }
+};
+
+export const verifyEmail = async (req, res) => {
+    try {
+        const { token } = req.query;
+        const userId = req.params.userId;
+        
+        if (!token || !userId) {
+            return res.status(400).send();
+        }
+
+        const user = await User.findByPk(userId);
+        if (!user) {
+            return res.status(404).send();
+        }
+
+        await user.update({ verified: true });
+        res.status(200).send();
+    } catch (error) {
+        logger.error(`Error verifying email: ${error.message}`);
+        res.status(500).send();
     }
 };
 

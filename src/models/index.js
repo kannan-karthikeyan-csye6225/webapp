@@ -41,6 +41,10 @@ const User = sequelize.define(
     },
     password: {
       type: DataTypes.STRING
+    },
+    verified: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
     }
   },
   {
