@@ -1,6 +1,6 @@
+// controllers/userController.js
 import User from '../models/index.js';
 import logger from '../config/logger.js';
-import { request } from 'express';
 import { SNS } from '@aws-sdk/client-sns';
 import crypto from 'crypto';
 
@@ -23,13 +23,18 @@ export const createUser = async (req, res) => {
         }
 
         const { account_created, account_updated, ...userData } = requestBody;
+        
+        // Generate verification token and set expiry
+        const verificationToken = crypto.randomBytes(32).toString('hex');
+        const tokenExpiry = new Date(Date.now() + 2 * 60 * 1000);
+        
         const user = await User.create({
             ...userData,
-            verified: false
+            verified: false,
+            verification_token: verificationToken,
+            token_expiry: tokenExpiry
         });
 
-        const verificationToken = crypto.randomBytes(32).toString('hex');
-        
         const verificationUrl = `${process.env.API_BASE_URL}/v1/user/verify/${user.id}?token=${verificationToken}`;
 
         try {
@@ -47,7 +52,7 @@ export const createUser = async (req, res) => {
             logger.error(`Failed to publish to SNS: ${snsError.message}`);
         }
 
-        const { password, ...userWithoutPassword } = user.get({ plain: true });
+        const { password, verification_token, token_expiry, ...userWithoutPassword } = user.get({ plain: true });
         res.status(201).json(userWithoutPassword);
     } catch (error) {
         if(error.name === "SequelizeValidationError"){
@@ -73,11 +78,26 @@ export const verifyEmail = async (req, res) => {
         }
 
         const user = await User.findByPk(userId);
+        
         if (!user) {
             return res.status(404).send();
         }
 
-        await user.update({ verified: true });
+        // Check if token matches and hasn't expired
+        if (user.verification_token !== token || 
+            !user.token_expiry || 
+            new Date() > new Date(user.token_expiry)) {
+            logger.info('Invalid or expired verification token');
+            return res.status(400).json({ message: 'Verification link has expired or is invalid' });
+        }
+
+        // Update user and clear verification data
+        await user.update({
+            verified: true,
+            verification_token: null,
+            token_expiry: null
+        });
+
         res.status(200).send();
     } catch (error) {
         logger.error(`Error verifying email: ${error.message}`);
@@ -105,6 +125,7 @@ export const getUser = async (req, res) => {
                 first_name,
                 last_name,
                 email,
+                verified,
                 account_created,
                 account_updated
             });
