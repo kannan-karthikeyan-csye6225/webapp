@@ -14,9 +14,7 @@ export const checkVerification = async (req, res, next) => {
 
         if (!user.verified) {
             logger.info('Unverified user attempting to access protected endpoint');
-            return res.status(403).json({ 
-                message: 'Please verify your email address to access this endpoint'
-            });
+            return res.status(403).send()
         }
 
         next();
