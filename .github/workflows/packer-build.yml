@@ -78,7 +78,7 @@ jobs:
           echo "version=${NEW_VERSION}" >> "$GITHUB_OUTPUT"
 
           # Update ASG to use the new version
-          ASG_NAME="${{ vars.AWS_PROFILE }}-app-asg"
+          ASG_NAME=$(aws autoscaling describe-auto-scaling-groups --query 'AutoScalingGroups[?contains(Tags[?Key==`Name`].Value, `${{ vars.AWS_PROFILE }}-webapp-asg-instance`)].[AutoScalingGroupName]' --output text)
           aws autoscaling update-auto-scaling-group \
             --auto-scaling-group-name $ASG_NAME \
             --launch-template "LaunchTemplateId=$TEMPLATE_ID,Version=$NEW_VERSION"
