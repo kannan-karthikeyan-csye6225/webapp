@@ -19,7 +19,7 @@ router
     .all(methodNotAllowed);
 
 router
-    .route('/verify/:userId')
+    .route('/verify')
     .get(verifyEmail)
     .all(methodNotAllowed);
 
