@@ -49,7 +49,7 @@ export const createUser = async (req, res) => {
             storedExpiry: createdUser.token_expiry
         });
 
-        const verificationUrl = `${process.env.API_BASE_URL}/v1/user/verify/${user.id}?token=${verificationToken}`;
+        const verificationUrl = `${process.env.API_BASE_URL}/v1/user/verify?token=${verificationToken}`;
 
         try {
             await sns.publish({
@@ -85,14 +85,13 @@ export const createUser = async (req, res) => {
 export const verifyEmail = async (req, res) => {
     try {
         const { token } = req.query;
-        const userId = req.params.userId;
         
-        if (!token || !userId) {
+        if (!token) {
             logger.info('Missing token or userId');
             return res.status(400).send();
         }
 
-        const user = await User.findByPk(userId);
+        const user = await User.findByPk(token);
         
         if (!user) {
             logger.info('User not found');
