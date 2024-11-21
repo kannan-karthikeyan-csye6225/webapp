@@ -24,11 +24,9 @@ export const createUser = async (req, res) => {
 
         const { account_created, account_updated, ...userData } = requestBody;
         
-        // Generate verification token and set expiry
         const verificationToken = crypto.randomBytes(32).toString('hex');
-        const tokenExpiry = new Date(Date.now() + 2 * 60 * 1000); // 2 minutes from now
+        const tokenExpiry = new Date(Date.now() + 2 * 60 * 1000);
 
-        // Log token creation details
         logger.info('Creating verification token:', {
             token: verificationToken,
             expiry: tokenExpiry,
@@ -42,7 +40,6 @@ export const createUser = async (req, res) => {
             token_expiry: tokenExpiry
         });
 
-        // Verify token was stored correctly
         const createdUser = await User.findByPk(user.id);
         logger.info('Verification token stored:', {
             storedToken: createdUser.verification_token,
@@ -91,35 +88,30 @@ export const verifyEmail = async (req, res) => {
             return res.status(400).send();
         }
 
-        const user = await User.findByPk(token);
+        const user = await User.findOne({
+            where: {
+                verification_token: token
+            }
+        });
         
         if (!user) {
             logger.info('User not found');
             return res.status(404).send();
         }
 
-        // Add debug logging
+        // Logging
         logger.info('Verification attempt:', {
             providedToken: token,
-            storedToken: user.verification_token,
             tokenExpiry: user.token_expiry,
             currentTime: new Date(),
             isExpired: user.token_expiry ? new Date() > new Date(user.token_expiry) : true
         });
 
-        // First check if tokens match
-        if (user.verification_token !== token) {
-            logger.info('Token mismatch');
-            return res.status(400).json({ message: 'Invalid verification token' });
-        }
-
-        // Then check expiration
         if (!user.token_expiry || new Date() > new Date(user.token_expiry)) {
             logger.info('Token expired');
             return res.status(400).json({ message: 'Verification link has expired' });
         }
 
-        // If we get here, token is valid and not expired
         await user.update({
             verified: true,
             verification_token: null,
