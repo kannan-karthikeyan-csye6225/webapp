@@ -5,6 +5,7 @@ sleep 30
 #update Ubuntu
 sudo apt-get update
 sudo apt-get upgrade -y
+sudo apt install -y jq awscli
 echo 'Ubuntu updated'
 
 #install Node
