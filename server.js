@@ -10,6 +10,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 const port = process.env.PORT || 3000;
+
+app.use('/cicdx', healthRoute);
 app.use('/healthz', healthRoute);
 app.use('/v1/user', userRoute);
 
